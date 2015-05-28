@@ -5,10 +5,8 @@ from gooey import Gooey, GooeyParser
 
 from SettingFileReader import *
 
-from PafyWrapper import *
 
-
-@Gooey(advanced=True , show_config=True, program_name='Tubular', default_size=(500, 600), required_cols=1, optional_cols=1, dump_build_config=False )
+@Gooey(advanced=True , show_config=True, program_name='Timelapse Composer', default_size=(500, 800), required_cols=1, optional_cols=1, dump_build_config=False )
 
 def main():
 
@@ -21,46 +19,27 @@ def main():
 
 
 
-    description = "Download tracks and playlists from Youtube."
+    description = "Compose a timelapse movie from a sequence of jpg images"
 
     #parser = argparse.ArgumentParser(description=description)
     parser = GooeyParser(description=description)
 
-    parser.add_argument('-output', required=True, help='Folder to save the tracks' , widget="DirChooser")
-
-    parser.add_argument('-track', required=False, default=None, help='Youtube track ID' )
-    parser.add_argument('-playlist', required=False, default=None, help='Youtube playlist ID' )
-    parser.add_argument('-audio', action="store_true", default=False, help="Download only the audio part (usualy m4a format)")
+    parser.add_argument('-input', required=True, type=argparse.FileType('r'), help='A jpeg file from the sequence' , widget="FileChooser")
+    parser.add_argument('-output', required=False, default=defaultOutput, help='Output sequence file name (default : ' + defaultOutput + ')' )
+    parser.add_argument('-width', required=False, default=defaultWidth, type=int, help='With of the output sequence (default : ' + str(defaultWidth) + ')' )
+    parser.add_argument('-height', required=False, type=int, help='height of the output sequence (default : keeps proportion to width)' )
+    parser.add_argument('-framerate', required=False, default=defaultFramerate, type=int, help='Framerate of the output sequence (default : ' + str(defaultFramerate) + ')' )
+    parser.add_argument('-bitrate', required=False, default=1920, type=int, help='Bitrate of the output sequence in kb/s (default : ' + str(defaultBitrateKb) + 'kb/s)' )
 
     args = parser.parse_args()
 
 
-    # the user must have chosen between a track and a Playlist.
-    # Though none of them is mandatory, so we have to check.
-    if(not args.track and not args.playlist):
-        print("[ERROR] You must fill at least one of those fields:\n\t- Track - to download a single track\n\t- Playlist - to download a entire playlist")
-
-
-    else:
-        pw = PafyWrapper()
-
-        # download a track
-        if(args.track):
-            try:
-                pw.downloadTrack(args.track, path=args.output, audio=args.audio)
-            except ValueError as e:
-                print("[INVALID URL]" + e)
-
-        if(args.playlist):
-            #try:
-            print(args.playlist)
-            pw.downloadPlaylist(args.playlist,  path=args.output, audio=args.audio)
-            #    print("DEBUG01")
-            #except ValueError as e:
-            #    print("[INVALID URL]" + e)
-
-
-
+    print args.input.name
+    print args.output
+    print args.width
+    print args.height
+    print args.framerate
+    print args.bitrate
 
 
 
